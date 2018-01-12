@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -14,6 +15,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.unstoppable.submitbuttonview.SubmitButton;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,8 +26,8 @@ public class MainActivity extends AppCompatActivity {
     String Base_url="http://blynk-cloud.com/f391b4bce2804777b46cc3fa1152e818/update/v2?value=";
     String url,value;
     //String url="http://blynk-cloud.com/f391b4bce2804777b46cc3fa1152e818/get/v4";
-    Button submitButton;
-
+    //Button submitButton;
+    SubmitButton submitButton;
     EditText a,b,c,d,e,f,g,h;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,13 +59,21 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
+        submitButton.setOnResultEndListener(new SubmitButton.OnResultEndListener() {
+            @Override
+            public void onResultEnd() {
+                submitButton.reset();
+            }
+        });
+
     }
 
 
 
 
     public void volleyRq(){
-        final ProgressDialog loading = ProgressDialog.show(this, "","Checking Details",false,false);
+//        final ProgressDialog loading = ProgressDialog.show(this, "","Checking Details",false,false);
 
         StringRequest putRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>()
@@ -72,7 +82,11 @@ public class MainActivity extends AppCompatActivity {
                     public void onResponse(String response) {
                         // response
                         Log.d("Response", response);
-                        loading.dismiss();
+                      //  loading.dismiss();
+                        Toast.makeText(getApplicationContext(),"Success",Toast.LENGTH_SHORT).show();
+                       // submitButton.reset();
+                        submitButton.doResult(true);
+
                     }
                 },
                 new Response.ErrorListener()
@@ -81,7 +95,10 @@ public class MainActivity extends AppCompatActivity {
                     public void onErrorResponse(VolleyError error) {
                         // error
                         //Log.d("Error.Response", response);
-                        loading.dismiss();
+                      //  loading.dismiss();
+                        Toast.makeText(getApplicationContext(),"Error",Toast.LENGTH_SHORT).show();
+                        //submitButton.reset();
+                        submitButton.doResult(false);
                     }
                 }
         ) {

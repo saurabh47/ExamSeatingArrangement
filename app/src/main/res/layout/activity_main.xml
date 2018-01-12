@@ -309,12 +309,19 @@
 
 
     </GridLayout>
-        <Button
+        <!--<Button
             android:layout_gravity="center"
             android:id="@+id/button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp
-"
-            android:text="SUBMIT"/>
+            android:layout_marginTop="20dp"
+            android:text="SUBMIT"/>-->
+    <com.unstoppable.submitbuttonview.SubmitButton
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="25dp"
+        app:buttonText="SUBMIT"
+        app:buttonTextSize="25sp"/>
     </android.support.v7.widget.LinearLayoutCompat>
