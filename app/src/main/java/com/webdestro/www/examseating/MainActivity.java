@@ -1,8 +1,19 @@
 package com.webdestro.www.examseating;
 
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -22,16 +33,24 @@ import java.io.UnsupportedEncodingException;
 public class MainActivity extends AppCompatActivity {
 
     //String url = "http://blynk-cloud.com/f391b4bce2804777b46cc3fa1152e818/update/v4";
-    String Base_url="http://blynk-cloud.com/90b1a2dad1ce4c5b9aad0d0557c1c375/update/v1";
+    String Base_url="http://blynk-cloud.com/";
+    String End_url="/update/v1";
     String url,value,row1,row2;
     //String url="http://blynk-cloud.com/f391b4bce2804777b46cc3fa1152e818/get/v4";
     //Button submitButton;
     SubmitButton submitButton;
     EditText a,b,c,d,e,f,g,h;
+    private String token;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
+        Toolbar myToolbar =  findViewById(R.id.my_toolbar);
+        setSupportActionBar(myToolbar);
+
         submitButton=findViewById(R.id.button);
 
         a=findViewById(R.id.editTextA);
@@ -54,11 +73,35 @@ public class MainActivity extends AppCompatActivity {
                 //        "%20"+e.getText().toString()+"%20"+f.getText().toString()+"%20"+g.getText().toString()+"%20"+h.getText().toString();
                 row1=a.getText().toString()+" "+b.getText().toString()+" "+c.getText().toString()+" "+d.getText().toString();
                 row2=e.getText().toString()+" "+f.getText().toString()+" "+g.getText().toString()+" "+h.getText().toString();
-                url=Base_url;//+value;
+
+                SharedPreferences sharedPref =getSharedPreferences("data", Context.MODE_PRIVATE);
+                token=sharedPref.getString("Token","90b1a2dad1ce4c5b9aad0d0557c1c375");
+
+                url=Base_url+token+End_url;
+
                 Log.d("URL",url);
                 volleyRq();
             }
         });
+
+//        myToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+//            @Override
+//            public boolean onMenuItemClick(MenuItem item) {
+//                switch (item.getItemId()) {
+//                    case R.id.action_settings:
+//                        // User chose the "Settings" item, show the app settings UI...
+//                        Toast.makeText(getApplicationContext(),"click",Toast.LENGTH_SHORT).show();
+//                        return true;
+//
+//
+//                    default:
+//                        // If we got here, the user's action was not recognized.
+//                        // Invoke the superclass to handle it.
+//                        return false;
+//
+//                }
+//            }
+//        });
 
 
         submitButton.setOnResultEndListener(new SubmitButton.OnResultEndListener() {
@@ -70,6 +113,75 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+   private void createPromt(){
+        // get prompts.xml view
+
+        LayoutInflater li = LayoutInflater.from(this);
+        View promptsView = li.inflate(R.layout.promt, null);
+
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+
+        // set prompts.xml to alertdialog builder
+        alertDialogBuilder.setView(promptsView);
+
+        final EditText userInput = (EditText) promptsView
+                .findViewById(R.id.editTextDialogUserInput);
+
+        // set dialog message
+        alertDialogBuilder
+                .setCancelable(false)
+                .setPositiveButton("Save",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog,int id) {
+                                // get user input and set it to result
+                                // edit text
+                                //result.setText(userInput.getText())
+                                if(userInput.getText().toString().isEmpty()){
+                                    //Don't save Nothing
+                                }else{
+                                    saveData(userInput.getText().toString());
+                                }
+                            }
+                        })
+                .setNegativeButton("Cancel",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog,int id) {
+                                dialog.cancel();
+                            }
+                        });
+
+        // create alert dialog
+        AlertDialog alertDialog = alertDialogBuilder.create();
+
+        // show it
+        alertDialog.show();
+
+
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+// Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.items, menu);
+        return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_settings:
+                // User chose the "Settings" item, show the app settings UI...
+                createPromt();
+                return true;
+
+
+
+            default:
+                // If we got here, the user's action was not recognized.
+                // Invoke the superclass to handle it.
+                return super.onOptionsItemSelected(item);
+
+        }
+    }
 
 
 
@@ -131,5 +243,19 @@ public class MainActivity extends AppCompatActivity {
         RequestQueue queue = Volley.newRequestQueue(this); // this = context
         queue.add(putRequest);
 
+    }
+    public void saveData(String token){
+        //SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        //Toast.makeText(this,IpAddress,Toast.LENGTH_SHORT).show();
+        SharedPreferences sharedPref =getSharedPreferences("data", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString("Token",token);
+        editor.apply();
+
+//        savedIP=sharedPref.getString("ServerIP","http://192.168.4.1/");
+//        mCurrentIP.setText("Saved IP :"+savedIP);
+//        ssidcheck();
+        //Toast.makeText(this,serverIP,Toast.LENGTH_LONG).show();
+        //Toast.makeText(this,ssid,Toast.LENGTH_LONG).show();
     }
 }
