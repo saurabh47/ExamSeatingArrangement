@@ -220,6 +220,8 @@
                 android:inputType="number" />
         </android.support.v7.widget.LinearLayoutCompat>
 
+        <!--
+
         <android.support.v7.widget.LinearLayoutCompat
             android:orientation="vertical"
             android:background="@android:color/holo_blue_light"
@@ -316,7 +318,7 @@
                 android:layout_height="wrap_content"
                 android:inputType="number" />
         </android.support.v7.widget.LinearLayoutCompat>
-
+-->
 
     </GridLayout>
         <!--<Button
